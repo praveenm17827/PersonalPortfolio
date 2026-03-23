@@ -34,7 +34,10 @@ router.post('/', async (req, res) => {
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
-            }
+            },
+            connectionTimeout: 5000, 
+            greetingTimeout: 5000,
+            socketTimeout: 5000
         });
 
         // 📬 Admin Notification
@@ -199,8 +202,10 @@ Message: ${message}
 
         // 🚀 Send Emails (Wrapped in try-catch to prevent 500 error on Render Free Tier SMTP block)
         try {
-            await transporter.sendMail(mailOptions);
-            await transporter.sendMail(replyMailOptions);
+            await Promise.all([
+                transporter.sendMail(mailOptions),
+                transporter.sendMail(replyMailOptions)
+            ]);
         } catch (emailErr) {
             console.error('Email sending failed (likely blocked by Render SMTP rules), but message was saved to database:', emailErr.message);
         }

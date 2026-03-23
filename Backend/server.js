@@ -36,10 +36,25 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.error('MongoDB Connection Error:', err));
+// MongoDB Connection (Serverless optimized)
+let isConnected = false;
+const connectDB = async () => {
+    if (isConnected) return;
+    try {
+        const db = await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 5000,
+        });
+        isConnected = db.connections[0].readyState === 1;
+        console.log('MongoDB Connected');
+    } catch (err) {
+        console.error('MongoDB Connection Error:', err);
+    }
+};
+
+app.use(async (req, res, next) => {
+    await connectDB();
+    next();
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
