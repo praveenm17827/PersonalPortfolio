@@ -15,10 +15,10 @@ const PORT = process.env.PORT || 5000;
 // Middleware (CORS must be first)
 // Middleware (CORS must be first)
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://mprav143.github.io', 'https://praveenmurugan.me'],
+    origin: '*',
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'auth-token']
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'auth-token', 'Authorization']
 }));
 
 app.use(express.json());
